@@ -1,4 +1,3 @@
-```markdown
 # CLI TodoList with Login and Registration
 
 A command-line interface (CLI) TodoList application with features like registration, login, adding, updating, deleting, and viewing todos.
@@ -100,4 +99,3 @@ Contributions are welcome! Feel free to open an issue or submit a pull request.
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
-```
