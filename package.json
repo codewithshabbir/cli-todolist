@@ -1,14 +1,21 @@
 {
-  "name": "cli-todo-list",
+  "name": "cli-todo-list-wth-login-and-registeration",
   "version": "1.0.0",
-  "description": "",
+  "description": "A CLI TodoList application with features like registration, login, adding, updating, deleting, and viewing todos.",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "CLI",
+    "TodoList",
+    "registration",
+    "login",
+    "tasks",
+    "management"
+  ],
+  "author": "Muhammad Shabbir",
   "license": "ISC",
   "dependencies": {
     "inquirer": "^9.2.17"
