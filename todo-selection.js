@@ -14,22 +14,22 @@ async function todoSelection(getId) {
                     "Update Todo",
                     "Delete Todo",
                     "Delete All Todo",
-                    "Exit"
+                    "Exit",
                 ],
             },
         ]);
         if (todosSelections.todosSelect.toLowerCase() === "select todo") {
-            let currentUser = getExistingUsers().find(user => user.userId === getId);
+            let currentUser = getExistingUsers().find((user) => user.userId === getId);
             if (currentUser) {
-                if (currentUser.myTodos.length === 0) {
+                if (!currentUser.myTodos || currentUser.myTodos.length === 0) {
                     console.log("No todos found.");
                 }
                 else {
                     console.log("Current Todos:");
-                    currentUser.myTodos.forEach(todo => {
+                    currentUser.myTodos.forEach((todo) => {
                         console.log("Task Id:", todo.todoId, "- Task:", todo.todoMessage);
-                        console.log("\n");
                     });
+                    console.log("\n");
                 }
             }
         }
@@ -51,33 +51,34 @@ async function todoSelection(getId) {
     }
 }
 async function addTodo(getId) {
-    let currentUser = getExistingUsers().find(user => user.userId === getId);
+    let currentUser = getExistingUsers().find((user) => user.userId === getId);
     if (currentUser) {
+        currentUser.myTodos = currentUser.myTodos || [];
         const addTodos = await inquirer.prompt([
             {
                 name: "newTodo",
-                message: "Enter a new Task:"
-            }
+                message: "Enter a new Task:",
+            },
         ]);
         const getTodoId = currentUser.myTodos.length > 0 ? currentUser.myTodos.slice(-1)[0].todoId : 0;
         const newTodo = {
             todoId: getTodoId + 1,
-            todoMessage: addTodos.newTodo
+            todoMessage: addTodos.newTodo,
         };
         currentUser.myTodos.push(newTodo);
         console.log("\n****************************************************");
         console.log("******* Your task has been added successfully! *******");
         console.log("******************************************************\n");
         console.log("Current Todos:");
-        currentUser.myTodos.forEach(todo => {
+        currentUser.myTodos.forEach((todo) => {
             console.log("Task Id:", todo.todoId, "- Task:", todo.todoMessage);
-            console.log("\n");
         });
+        console.log("\n");
         const continueTask = await inquirer.prompt({
             type: "list",
             name: "continue",
             message: "Do you want to add a new task?",
-            choices: ['Yes', 'No']
+            choices: ["Yes", "No"],
         });
         if (continueTask.continue.toLowerCase() === "yes") {
             await addTodo(getId);
@@ -88,76 +89,91 @@ async function addTodo(getId) {
     }
 }
 async function updateTodo(getId) {
-    let currentUser = getExistingUsers().find(user => user.userId === getId);
+    let currentUser = getExistingUsers().find((user) => user.userId === getId);
     if (currentUser) {
-        const updateTodoId = await inquirer.prompt([
-            {
-                type: "number",
-                name: "todoId",
-                message: "Enter the ID of the Todo you want to update:"
-            }
-        ]);
-        const todoToUpdate = currentUser.myTodos.find(todo => todo.todoId === updateTodoId.todoId);
-        if (todoToUpdate) {
-            const updatedTodo = await inquirer.prompt([
-                {
-                    name: "newMessage",
-                    message: "Enter the updated message for the Todo:"
-                }
-            ]);
-            todoToUpdate.todoMessage = updatedTodo.newMessage;
-            console.log("\n********************************************");
-            console.log("******* Your task has been updated! *******");
-            console.log("********************************************\n");
-            console.log("Current Todos:");
-            currentUser.myTodos.forEach(todo => {
-                console.log("Task Id:", todo.todoId, "- Task:", todo.todoMessage);
-            });
-            console.log("\n");
+        if (!currentUser.myTodos || currentUser.myTodos.length === 0) {
+            console.log("No todos found.");
         }
         else {
-            console.log("\n********************************************");
-            console.log("*** No Todo found with the provided ID! ***");
-            console.log("********************************************\n");
+            const updateTodoId = await inquirer.prompt([
+                {
+                    type: "number",
+                    name: "todoId",
+                    message: "Enter the ID of the Todo you want to update:",
+                },
+            ]);
+            const todoToUpdate = currentUser.myTodos.find((todo) => todo.todoId === updateTodoId.todoId);
+            if (todoToUpdate) {
+                const updatedTodo = await inquirer.prompt([
+                    {
+                        name: "newMessage",
+                        message: "Enter the updated message for the Todo:",
+                    },
+                ]);
+                todoToUpdate.todoMessage = updatedTodo.newMessage;
+                console.log("\n********************************************");
+                console.log("******* Your task has been updated! *******");
+                console.log("********************************************\n");
+                console.log("Current Todos:");
+                currentUser.myTodos.forEach((todo) => {
+                    console.log("Task Id:", todo.todoId, "- Task:", todo.todoMessage);
+                });
+                console.log("\n");
+            }
+            else {
+                console.log("\n********************************************");
+                console.log("*** No Todo found with the provided ID! ***");
+                console.log("********************************************\n");
+            }
         }
     }
 }
 async function deleteTodo(getId) {
-    let currentUser = getExistingUsers().find(user => user.userId === getId);
+    let currentUser = getExistingUsers().find((user) => user.userId === getId);
     if (currentUser) {
-        const deleteTodoId = await inquirer.prompt([
-            {
-                type: "number",
-                name: "todoId",
-                message: "Enter the ID of the Todo you want to delete:"
-            }
-        ]);
-        const todoIndexToDelete = currentUser.myTodos.findIndex(todo => todo.todoId === deleteTodoId.todoId);
-        if (todoIndexToDelete !== -1) {
-            currentUser.myTodos.splice(todoIndexToDelete, 1);
-            console.log("\n********************************************");
-            console.log("******* Your task has been deleted! *******");
-            console.log("********************************************\n");
-            console.log("Current Todos:");
-            currentUser.myTodos.forEach(todo => {
-                console.log("Task Id:", todo.todoId, "- Task:", todo.todoMessage);
-                console.log("\n");
-            });
+        if (!currentUser.myTodos || currentUser.myTodos.length === 0) {
+            console.log("No todos found.");
         }
         else {
-            console.log("\n********************************************");
-            console.log("*** No Todo found with the provided ID! ***");
-            console.log("********************************************\n");
+            const deleteTodoId = await inquirer.prompt([
+                {
+                    type: "number",
+                    name: "todoId",
+                    message: "Enter the ID of the Todo you want to delete:",
+                },
+            ]);
+            const todoIndexToDelete = currentUser.myTodos.findIndex((todo) => todo.todoId === deleteTodoId.todoId);
+            if (todoIndexToDelete !== -1) {
+                currentUser.myTodos.splice(todoIndexToDelete, 1);
+                console.log("\n********************************************");
+                console.log("******* Your task has been deleted! *******");
+                console.log("********************************************\n");
+                console.log("Current Todos:");
+                currentUser.myTodos.forEach((todo) => {
+                    console.log("Task Id:", todo.todoId, "- Task:", todo.todoMessage);
+                });
+                console.log("\n");
+            }
+            else {
+                console.log("\n********************************************");
+                console.log("*** No Todo found with the provided ID! ***");
+                console.log("********************************************\n");
+            }
         }
     }
 }
 async function deleteAllTodos(getId) {
-    let currentUser = getExistingUsers().find(user => user.userId === getId);
+    let currentUser = getExistingUsers().find((user) => user.userId === getId);
     if (currentUser) {
-        currentUser.myTodos = []; // Empty the array of todos
-        console.log("\n********************************************");
-        console.log("******* All your todos have been deleted! *******");
-        console.log("********************************************\n");
+        if (!currentUser.myTodos || currentUser.myTodos.length === 0) {
+            console.log("No todos found.");
+        }
+        else {
+            currentUser.myTodos = []; // Empty the array of todos
+            console.log("\n********************************************");
+            console.log("******* All your todos have been deleted! *******");
+            console.log("********************************************\n");
+        }
     }
 }
 export { todoSelection };
